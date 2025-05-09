@@ -28,7 +28,6 @@ export default function Login() {
         const data = await response.json();
         localStorage.setItem("access_token", data.access_token);
 
-        // Armazene o objeto completo do usuário, não apenas o nome
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -39,14 +38,13 @@ export default function Login() {
           })
         );
 
-        // Redireciona para a home após o login bem-sucedido
         router.push("/");
       } else {
         const data = await response.json();
-        setError(data.detail || "Erro ao fazer login");
+        setError(data.detail || "Error to login");
       }
     } catch (error) {
-      setError("Erro de conexão");
+      setError("Connection error");
     }
   };
 
@@ -70,16 +68,14 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          
-            <input
-              type="password"
-              className="form-control p-3 bg-itens border-0 text-white"
-              id="floatingPassword"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          
+          <input
+            type="password"
+            className="form-control p-3 bg-itens border-0 text-white"
+            id="floatingPassword"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
           <div className="form-check text-start my-3">
             <input
@@ -98,7 +94,7 @@ export default function Login() {
           </button>
 
           <p className="mt-3 mb-3 text-center">
-            Don't have an account?{" "}
+            Don't have an account?
             <Link className="link-underline-light" href="/register">
               Sign up here
             </Link>
