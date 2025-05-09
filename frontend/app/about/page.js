@@ -1,6 +1,4 @@
 "use client";
-import Link from "next/link";
-import "boxicons";
 
 export default function About() {
   return (
