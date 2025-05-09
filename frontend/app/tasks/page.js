@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import "boxicons";
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
@@ -17,6 +16,7 @@ export default function Tasks() {
   const totalPages = Math.ceil(tasks.length / itemsPerPage);
 
   useEffect(() => {
+    import("boxicons");
     const fetchTasks = async () => {
       const token = localStorage.getItem("access_token");
 
