@@ -57,7 +57,7 @@ export default function ProjectPage() {
     };
 
     fetchProjectAndTasks();
-  }, [id]);
+  }, [API_URL, id]);
 
   if (project === null) {
     return <div>Project not found.</div>;

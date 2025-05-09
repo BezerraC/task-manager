@@ -41,7 +41,7 @@ export default function Tasks() {
     };
 
     fetchTasks();
-  }, []);
+  }, [API_URL]);
 
   const sortTasks = (key) => {
     let direction = "asc";

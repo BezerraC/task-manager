@@ -41,7 +41,7 @@ export default function Home() {
     };
 
     fetchProjects();
-  }, []);
+  }, [API_URL]);
 
   const sortProjects = (key) => {
     let direction = "asc";
