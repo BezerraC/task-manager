@@ -10,13 +10,14 @@ export default function NewProject() {
   const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState("Pending");
   const [error, setError] = useState(null);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const token = localStorage.getItem("access_token");
-      const response = await fetch("http://localhost:8000/api/projects", {
+      const response = await fetch(`${API_URL}/api/projects`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

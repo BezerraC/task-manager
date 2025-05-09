@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from 'next/navigation';
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import "boxicons";
 
 export default function ProjectPage() {
   const params = useParams();
   const id = params?.id;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -26,15 +27,12 @@ export default function ProjectPage() {
     const fetchProjectAndTasks = async () => {
       const token = localStorage.getItem("access_token");
 
-      const projectRes = await fetch(
-        `http://localhost:8000/api/projects/${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const projectRes = await fetch(`${API_URL}/api/projects/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (projectRes.ok) {
         const projectData = await projectRes.json();
@@ -45,15 +43,12 @@ export default function ProjectPage() {
         return;
       }
 
-      const tasksRes = await fetch(
-        `http://localhost:8000/api/tasks?project_id=${id}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const tasksRes = await fetch(`${API_URL}/api/tasks?project_id=${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (tasksRes.ok) {
         const tasksData = await tasksRes.json();

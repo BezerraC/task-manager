@@ -11,6 +11,7 @@ export default function NewTaskPage({ params }) {
   const [priority, setPriority] = useState("normal");
   const [projectName, setProjectName] = useState("");
   const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -59,7 +60,7 @@ export default function NewTaskPage({ params }) {
       ? new Date(dueDate + "T23:59:59").toISOString()
       : null;
 
-    const res = await fetch("http://localhost:8000/api/tasks", {
+    const res = await fetch(`${API_URL}/api/tasks`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

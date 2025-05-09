@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import "boxicons";
 
 export default function Home() {
   const [projects, setProjects] = useState([]);
@@ -15,26 +14,30 @@ export default function Home() {
   const currentProjects = projects.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(projects.length / itemsPerPage);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   useEffect(() => {
+    import("boxicons");
     const fetchProjects = async () => {
-      const token = localStorage.getItem("access_token");
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("access_token");
 
-      const res = await fetch("http://localhost:8000/api/projects", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        const res = await fetch(`${API_URL}/api/projects`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      if (!res.ok) {
-        console.log("Failed to fetch projects", res.status);
-        return;
+        if (!res.ok) {
+          console.log("Failed to fetch projects", res.status);
+          return;
+        }
+
+        const data = await res.json();
+        setProjects(Array.isArray(data) ? data : []);
       }
-
-      const data = await res.json();
-      setProjects(Array.isArray(data) ? data : []);
     };
 
     fetchProjects();

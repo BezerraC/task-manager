@@ -14,13 +14,14 @@ export default function Tasks() {
   const currentTasks = tasks.slice(indexOfFirstItem, indexOfLastItem);
 
   const totalPages = Math.ceil(tasks.length / itemsPerPage);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   useEffect(() => {
     import("boxicons");
     const fetchTasks = async () => {
       const token = localStorage.getItem("access_token");
 
-      const res = await fetch("http://localhost:8000/api/tasks", {
+      const res = await fetch(`${API_URL}/api/tasks`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
