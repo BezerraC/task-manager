@@ -30,7 +30,7 @@ async def connect_to_mongo():
     
     logging.info("Initializing MongoDB connection...")
     try:
-        client = AsyncIOMotorClient(settings.MONGO_URI)
+        client = AsyncIOMotorClient(settings.MONGO_URI, tls=True)
         database = client[settings.DATABASE_NAME]
 
         await database.command("ping")
