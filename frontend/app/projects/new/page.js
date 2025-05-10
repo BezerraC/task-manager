@@ -9,6 +9,7 @@ export default function NewProject() {
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState("Pending");
+  const user = JSON.parse(localStorage.getItem("user"));
   const [error, setError] = useState(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -23,7 +24,7 @@ export default function NewProject() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ name, description, deadline, status }),
+        body: JSON.stringify({ name, description, deadline, status, assigned_by: user.name }),
       });
 
       if (!response.ok) {

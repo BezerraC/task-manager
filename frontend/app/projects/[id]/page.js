@@ -121,7 +121,7 @@ export default function ProjectPage() {
         </div>
         <div className="d-flex flex-column gap-2">
           <p className="text-white m-0">{project.description}</p>
-          <p className="text-secondary m-0 fs-6 ms-auto">{project.author_id}</p>
+          <p className="text-secondary m-0 fs-6 ms-auto">Author: {project.assigned_by}</p>
         </div>
       </div>
 

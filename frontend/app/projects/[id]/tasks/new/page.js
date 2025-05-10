@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import "boxicons";
 
 export default function NewTaskPage({ params }) {
   const { id: projectId } = params;
@@ -30,10 +31,10 @@ export default function NewTaskPage({ params }) {
           const data = await res.json();
           setProjectName(data.name);
         } else {
-          console.error("Erro ao buscar projeto");
+          console.error("Error to fetch project");
         }
       } catch (error) {
-        console.error("Erro ao buscar projeto:", error);
+        console.error("Error to fetch project:", error);
       }
     };
 
@@ -82,8 +83,7 @@ export default function NewTaskPage({ params }) {
       router.push(`/projects/${projectId}`);
     } else {
       const errorData = await res.json();
-      console.error("Erro ao criar tarefa:", errorData);
-      alert("Erro ao criar tarefa");
+      console.error("Error to create task:", errorData);
     }
   };
 
