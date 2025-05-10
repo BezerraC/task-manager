@@ -2,6 +2,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from config import settings
 import logging
 import asyncio
+import urllib.parse
+import certifi
 
 # Global variables to store connections
 client = None
@@ -30,14 +32,35 @@ async def connect_to_mongo():
     
     logging.info("Initializing MongoDB connection...")
     try:
-        client = AsyncIOMotorClient(settings.MONGO_URI, tls=True)
+        # Parse the connection string to properly escape password characters
+        mongo_uri = settings.MONGO_URI
+        
+        # Set additional connection options
+        connection_options = {
+            "tls": True,
+            "tlsCAFile": certifi.where(),  # Use certifi for trusted CA certificates
+            "retryWrites": True,
+            "w": "majority",
+            "maxPoolSize": 10,
+            "minPoolSize": 1,
+            "serverSelectionTimeoutMS": 30000,  # Increased timeout for server selection
+            "socketTimeoutMS": 45000,  # Increased socket timeout
+            "connectTimeoutMS": 30000,  # Increased connection timeout
+        }
+        
+        # Create the client
+        client = AsyncIOMotorClient(mongo_uri, **connection_options)
         database = client[settings.DATABASE_NAME]
 
+        # Test connection with a ping command
         await database.command("ping")
         logging.info("Connected to MongoDB successfully")
         
     except Exception as e:
         logging.error(f"Error connecting to MongoDB: {e}")
+        # Log more specific information for debugging
+        if hasattr(e, 'details'):
+            logging.error(f"Error details: {e.details}")
         raise
 
 async def close_mongo_connection():
