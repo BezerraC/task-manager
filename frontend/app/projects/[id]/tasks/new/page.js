@@ -10,6 +10,7 @@ export default function NewTaskPage({ params }) {
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("normal");
   const [projectName, setProjectName] = useState("");
+  const user = JSON.parse(localStorage.getItem("user"));
   const router = useRouter();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -73,7 +74,7 @@ export default function NewTaskPage({ params }) {
         priority: mapPriority(priority),
         status: "Pending",
         project_id: projectId,
-        assigned_to: "default_user",
+        assigned_to: user.name,
       }),
     });
 

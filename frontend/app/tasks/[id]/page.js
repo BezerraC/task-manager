@@ -102,7 +102,7 @@ export default function TaskPage() {
         <div className="d-flex flex-column flex-sm-row gap-3 gap-sm-5">
           <div className="col col-sm-9">
             <p className="text-white m-0 mb-3">{task.description}</p>
-            <p className="text-secondary m-0 fs-6">{task.created_by}</p>
+            <p className="text-secondary m-0 fs-6">Author: {task.assigned_to}</p>
           </div>
           <div className="col">
             <p>
