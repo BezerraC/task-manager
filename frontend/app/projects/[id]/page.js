@@ -251,19 +251,19 @@ export default function ProjectPage() {
                       </button>
                       <ul className="dropdown-menu">
                         <Link
-                          href={`/task/${task.id}`}
+                          href={`/tasks/${task.id}`}
                           className="dropdown-item"
                         >
                           View
                         </Link>
                         <Link
-                          href={`/task/${task.id}`}
+                          href={`/tasks/${task.id}`}
                           className="dropdown-item"
                         >
                           Edit
                         </Link>
                         <Link
-                          href={`/task/${task.id}`}
+                          href={`/tasks/${task.id}`}
                           className="dropdown-item"
                         >
                           Delete
