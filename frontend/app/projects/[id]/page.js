@@ -193,85 +193,88 @@ export default function ProjectPage() {
 
             <div className="d-flex flex-column gap-3">
               {currentTasks.map((task) => (
-                <div
-                  className="px-4 py-4 d-flex flex-row align-items-center rounded-4 bg-itens text-white"
+                <Link
+                  href={`/tasks/${task.id}`}
+                  className="text-decoration-none"
                   key={task.id}
                 >
-                  <div className="col text-truncate" scope="row">
-                    {task.title}
-                  </div>
-                  <div className="col d-none d-sm-block text-truncate">
-                    {task.description}
-                  </div>
-                  <div className="col d-flex justify-content-center">
-                    <span
-                      className={`badge fw-normal fs-6 ${
-                        task.status === "Pending"
-                          ? "text-bg-warning"
-                          : task.status === "In Progress"
-                          ? "text-bg-primary"
-                          : task.status === "Completed"
-                          ? "text-bg-success"
-                          : "text-bg-secondary"
-                      }`}
-                    >
-                      {task.status}
-                    </span>
-                  </div>
-                  <div className="col d-flex justify-content-center">
-                    <span
-                      className={`badge fw-normal fs-6 ${
-                        task.priority === "Low"
-                          ? "text-bg-primary"
-                          : task.priority === "Medium"
-                          ? "text-bg-warning"
-                          : task.priority === "High"
-                          ? "text-bg-danger"
-                          : "text-bg-secondary"
-                      }`}
-                    >
-                      {task.priority}
-                    </span>
-                  </div>
-                  <div className="col d-none d-sm-flex justify-content-center">
-                    {new Date(task.due_date).toLocaleDateString()}
-                  </div>
-                  <div className="col d-flex justify-content-center">
-                    <div className="dropdown ms-4">
-                      <button
-                        className="btn btn-outline-light pb-0 pt-2 px-1"
-                        type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
+                  <div className="px-4 py-4 d-flex flex-row align-items-center rounded-4 bg-itens text-white">
+                    <div className="col text-truncate" scope="row">
+                      {task.title}
+                    </div>
+                    <div className="col d-none d-sm-block text-truncate">
+                      {task.description}
+                    </div>
+                    <div className="col d-flex justify-content-center">
+                      <span
+                        className={`badge fw-normal fs-6 ${
+                          task.status === "Pending"
+                            ? "text-bg-warning"
+                            : task.status === "In Progress"
+                            ? "text-bg-primary"
+                            : task.status === "Completed"
+                            ? "text-bg-success"
+                            : "text-bg-secondary"
+                        }`}
                       >
-                        <box-icon
-                          color="white"
-                          name="dots-vertical-rounded"
-                        ></box-icon>
-                      </button>
-                      <ul className="dropdown-menu">
-                        <Link
-                          href={`/tasks/${task.id}`}
-                          className="dropdown-item"
+                        {task.status}
+                      </span>
+                    </div>
+                    <div className="col d-flex justify-content-center">
+                      <span
+                        className={`badge fw-normal fs-6 ${
+                          task.priority === "Low"
+                            ? "text-bg-primary"
+                            : task.priority === "Medium"
+                            ? "text-bg-warning"
+                            : task.priority === "High"
+                            ? "text-bg-danger"
+                            : "text-bg-secondary"
+                        }`}
+                      >
+                        {task.priority}
+                      </span>
+                    </div>
+                    <div className="col d-none d-sm-flex justify-content-center">
+                      {new Date(task.due_date).toLocaleDateString()}
+                    </div>
+                    <div className="col d-flex justify-content-center">
+                      <div className="dropdown ms-4">
+                        <button
+                          className="btn btn-outline-light pb-0 pt-2 px-1"
+                          type="button"
+                          data-bs-toggle="dropdown"
+                          aria-expanded="false"
                         >
-                          View
-                        </Link>
-                        <Link
-                          href={`/tasks/${task.id}`}
-                          className="dropdown-item"
-                        >
-                          Edit
-                        </Link>
-                        <Link
-                          href={`/tasks/${task.id}`}
-                          className="dropdown-item"
-                        >
-                          Delete
-                        </Link>
-                      </ul>
+                          <box-icon
+                            color="white"
+                            name="dots-vertical-rounded"
+                          ></box-icon>
+                        </button>
+                        <ul className="dropdown-menu">
+                          <Link
+                            href={`/tasks/${task.id}`}
+                            className="dropdown-item"
+                          >
+                            View
+                          </Link>
+                          <Link
+                            href={`/tasks/${task.id}`}
+                            className="dropdown-item"
+                          >
+                            Edit
+                          </Link>
+                          <Link
+                            href={`/tasks/${task.id}`}
+                            className="dropdown-item"
+                          >
+                            Delete
+                          </Link>
+                        </ul>
+                      </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 

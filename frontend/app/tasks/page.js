@@ -124,61 +124,71 @@ export default function Tasks() {
 
         <div className="d-flex flex-column gap-3">
           {currentTasks.map((tasks) => (
-            <div
-              className="px-4 py-4 d-flex flex-row align-items-center rounded-4 bg-itens text-white"
-              key={tasks.id}
-            >
-              <div className="col" scope="row">
-                {tasks.title}
-              </div>
-              <div className="col d-none d-sm-block text-truncate">
-                {tasks.description}
-              </div>
-              <div className="col d-flex justify-content-center">
-                <span
-                  className={`badge fw-normal fs-6 ${
-                    tasks.status === "Pending"
-                      ? "text-bg-warning"
-                      : tasks.status === "In Progress"
-                      ? "text-bg-primary"
-                      : tasks.status === "Completed"
-                      ? "text-bg-success"
-                      : "text-bg-secondary"
-                  }`}
-                >
-                  {tasks.status}
-                </span>
-              </div>
-              <div className="col d-none d-sm-flex justify-content-center">
-                {new Date(tasks.due_date).toLocaleDateString()}
-              </div>
-              <div className="col d-flex justify-content-center">
-                <div className="dropdown ms-4">
-                  <button
-                    className="btn btn-outline-light pb-0 pt-2 px-1"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
+            <Link href={`/tasks/${tasks.id}`} className="text-decoration-none" key={tasks.id}>
+              <div
+                className="px-4 py-4 d-flex flex-row align-items-center rounded-4 bg-itens text-white"
+              >
+                <div className="col" scope="row">
+                  {tasks.title}
+                </div>
+                <div className="col d-none d-sm-block text-truncate">
+                  {tasks.description}
+                </div>
+                <div className="col d-flex justify-content-center">
+                  <span
+                    className={`badge fw-normal fs-6 ${
+                      tasks.status === "Pending"
+                        ? "text-bg-warning"
+                        : tasks.status === "In Progress"
+                        ? "text-bg-primary"
+                        : tasks.status === "Completed"
+                        ? "text-bg-success"
+                        : "text-bg-secondary"
+                    }`}
                   >
-                    <box-icon
-                      color="white"
-                      name="dots-vertical-rounded"
-                    ></box-icon>
-                  </button>
-                  <ul className="dropdown-menu">
-                    <Link href={`/tasks/${tasks.id}`} className="dropdown-item">
-                      View
-                    </Link>
-                    <Link href={`/tasks/${tasks.id}`} className="dropdown-item">
-                      Edit
-                    </Link>
-                    <Link href={`/tasks/${tasks.id}`} className="dropdown-item">
-                      Delete
-                    </Link>
-                  </ul>
+                    {tasks.status}
+                  </span>
+                </div>
+                <div className="col d-none d-sm-flex justify-content-center">
+                  {new Date(tasks.due_date).toLocaleDateString()}
+                </div>
+                <div className="col d-flex justify-content-center">
+                  <div className="dropdown ms-4">
+                    <button
+                      className="btn btn-outline-light pb-0 pt-2 px-1"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <box-icon
+                        color="white"
+                        name="dots-vertical-rounded"
+                      ></box-icon>
+                    </button>
+                    <ul className="dropdown-menu">
+                      <Link
+                        href={`/tasks/${tasks.id}`}
+                        className="dropdown-item"
+                      >
+                        View
+                      </Link>
+                      <Link
+                        href={`/tasks/${tasks.id}`}
+                        className="dropdown-item"
+                      >
+                        Edit
+                      </Link>
+                      <Link
+                        href={`/tasks/${tasks.id}`}
+                        className="dropdown-item"
+                      >
+                        Delete
+                      </Link>
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

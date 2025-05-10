@@ -127,70 +127,71 @@ export default function Home() {
 
         <div className="d-flex flex-column gap-3">
           {currentProjects.map((project) => (
-            <div
-              className="px-4 py-4 d-flex flex-row align-items-center rounded-4 bg-itens text-white"
-              key={project.id}
-            >
-              <div className="col" scope="row">
-                {project.name}
-              </div>
-              <div className="col d-none d-sm-block text-truncate">
-                {project.description}
-              </div>
-              <div className="col d-flex justify-content-center">
-                <span
-                  className={`badge fw-normal fs-6 ${
-                    project.status === "Pending"
-                      ? "text-bg-warning"
-                      : project.status === "In Progress"
-                      ? "text-bg-primary"
-                      : project.status === "Completed"
-                      ? "text-bg-success"
-                      : "text-bg-secondary"
-                  }`}
-                >
-                  {project.status}
-                </span>
-              </div>
-              <div className="col d-none d-sm-flex justify-content-center">
-                {new Date(project.deadline).toLocaleDateString()}
-              </div>
-              <div className="col d-flex justify-content-center">
-                <div className="dropdown ms-4">
-                  <button
-                    className="btn btn-outline-light pb-0 pt-2 px-1"
-                    type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
+            <Link href={`/projects/${project.id}`} className="text-decoration-none" key={project.id}>
+              <div
+                className="px-4 py-4 d-flex flex-row align-items-center rounded-4 bg-itens text-white"
+              >
+                <div className="col" scope="row">
+                  {project.name}
+                </div>
+                <div className="col d-none d-sm-block text-truncate">
+                  {project.description}
+                </div>
+                <div className="col d-flex justify-content-center">
+                  <span
+                    className={`badge fw-normal fs-6 ${
+                      project.status === "Pending"
+                        ? "text-bg-warning"
+                        : project.status === "In Progress"
+                        ? "text-bg-primary"
+                        : project.status === "Completed"
+                        ? "text-bg-success"
+                        : "text-bg-secondary"
+                    }`}
                   >
-                    <box-icon
-                      color="white"
-                      name="dots-vertical-rounded"
-                    ></box-icon>
-                  </button>
-                  <ul className="dropdown-menu">
-                    <Link
-                      href={`/projects/${project.id}`}
-                      className="dropdown-item"
+                    {project.status}
+                  </span>
+                </div>
+                <div className="col d-none d-sm-flex justify-content-center">
+                  {new Date(project.deadline).toLocaleDateString()}
+                </div>
+                <div className="col d-flex justify-content-center">
+                  <div className="dropdown ms-4">
+                    <button
+                      className="btn btn-outline-light pb-0 pt-2 px-1"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
                     >
-                      View
-                    </Link>
-                    <Link
-                      href={`/projects/${project.id}`}
-                      className="dropdown-item"
-                    >
-                      Edit
-                    </Link>
-                    <Link
-                      href={`/projects/${project.id}`}
-                      className="dropdown-item"
-                    >
-                      Delete
-                    </Link>
-                  </ul>
+                      <box-icon
+                        color="white"
+                        name="dots-vertical-rounded"
+                      ></box-icon>
+                    </button>
+                    <ul className="dropdown-menu">
+                      <Link
+                        href={`/projects/${project.id}`}
+                        className="dropdown-item"
+                      >
+                        View
+                      </Link>
+                      <Link
+                        href={`/projects/${project.id}`}
+                        className="dropdown-item"
+                      >
+                        Edit
+                      </Link>
+                      <Link
+                        href={`/projects/${project.id}`}
+                        className="dropdown-item"
+                      >
+                        Delete
+                      </Link>
+                    </ul>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
