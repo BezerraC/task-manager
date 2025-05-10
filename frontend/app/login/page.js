@@ -8,6 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -44,6 +45,7 @@ export default function Login() {
         setError(data.detail || "Error to login");
       }
     } catch (error) {
+      console.error("Error:", error);
       setError("Connection error");
     }
   };
