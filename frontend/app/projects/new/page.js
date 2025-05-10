@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function NewProject() {
@@ -9,15 +9,20 @@ export default function NewProject() {
   const [description, setDescription] = useState("");
   const [deadline, setDeadline] = useState("");
   const [status, setStatus] = useState("Pending");
-  const user = JSON.parse(localStorage.getItem("user"));
   const [error, setError] = useState(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    const storedToken = localStorage.getItem("access_token");
+    if (storedUser) setUser(JSON.parse(storedUser));
+    if (storedToken) setToken(storedToken);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("access_token");
       const response = await fetch(`${API_URL}/api/projects`, {
         method: "POST",
         headers: {

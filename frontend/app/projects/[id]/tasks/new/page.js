@@ -10,23 +10,24 @@ export default function NewTaskPage({ params }) {
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [priority, setPriority] = useState("normal");
+  const [status, setStatus] = useState("Pending");
   const [projectName, setProjectName] = useState("");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState(null);
   const router = useRouter();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+
     const fetchProject = async () => {
       try {
         const token = localStorage.getItem("access_token");
-        const res = await fetch(
-          `${API_URL}/api/projects/${projectId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await fetch(`${API_URL}/api/projects/${projectId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (res.ok) {
           const data = await res.json();
           setProjectName(data.name);
@@ -42,7 +43,7 @@ export default function NewTaskPage({ params }) {
   }, [projectId]);
 
   const mapPriority = (value) => {
-    switch (value) {
+    switch (value.toLowerCase()) {
       case "low":
         return "Low";
       case "normal":
@@ -73,9 +74,9 @@ export default function NewTaskPage({ params }) {
         description,
         due_date: isoDueDate,
         priority: mapPriority(priority),
-        status: "Pending",
+        status,
         project_id: projectId,
-        assigned_to: user.name,
+        assigned_to: user?.name || "Unknown",
       }),
     });
 
@@ -86,6 +87,8 @@ export default function NewTaskPage({ params }) {
       console.error("Error to create task:", errorData);
     }
   };
+
+  if (!user) return null;
 
   return (
     <main
@@ -103,58 +106,48 @@ export default function NewTaskPage({ params }) {
               <input
                 type="text"
                 className="form-control mb-3 p-3 bg-itens border-0 text-white"
-                id="floatingInput"
                 placeholder="Task name"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
 
               <textarea
-                type="text"
                 className="form-control p-3 bg-itens border-0 text-white"
-                id="inputDescription"
                 rows="4"
                 placeholder="Task description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-              ></textarea>
+              />
             </div>
             <div className="col">
               <input
                 type="date"
                 className="form-control mb-3 p-3 bg-itens border-0 text-white"
-                id="floatingInput"
-                placeholder="Project deadline"
+                placeholder="Task deadline"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
               />
 
               <select
-                class="form-select bg-dark text-light border border-secondary p-3 mb-3"
-                aria-label="Default select example"
+                className="form-select bg-dark text-light border border-secondary p-3 mb-3"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
-                <option disabled selected>
-                  Select status
-                </option>
+                <option disabled>Select status</option>
                 <option value="Pending">Pending</option>
                 <option value="In Progress">In Progress</option>
                 <option value="Completed">Completed</option>
               </select>
 
               <select
-                class="form-select bg-dark text-light border border-secondary p-3 mb-3"
-                aria-label="Default select example"
+                className="form-select bg-dark text-light border border-secondary p-3 mb-3"
                 value={priority}
                 onChange={(e) => setPriority(e.target.value)}
               >
-                <option disabled selected>
-                  Select Priority
-                </option>
-                <option value="Low">Low</option>
-                <option value="Normal">Normal</option>
-                <option value="High">High</option>
+                <option disabled>Select Priority</option>
+                <option value="low">Low</option>
+                <option value="normal">Normal</option>
+                <option value="high">High</option>
               </select>
             </div>
           </div>
