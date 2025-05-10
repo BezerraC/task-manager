@@ -18,7 +18,7 @@ export default function NewTaskPage({ params }) {
       try {
         const token = localStorage.getItem("access_token");
         const res = await fetch(
-          `http://localhost:8000/api/projects/${projectId}`,
+          `${API_URL}/api/projects/${projectId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
