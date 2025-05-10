@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+import uvicorn
+import os
 
 from routers import auth, users, projects, tasks
 from database import connect_to_mongo, close_mongo_connection, check_database_connection
@@ -44,7 +46,8 @@ app.include_router(tasks.router, prefix="/api")
 async def root():
     return {
         "message": "API of Task Management",
-        "docs": "/docs"
+        "docs": "/docs",
+        "status": "ok"
     }
 
 @app.get("/api/health")
@@ -56,5 +59,9 @@ async def health_check():
     }
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("main:app", host="localhost", port=8000, reload=True)
+    
+    port = int(os.environ.get("PORT", 8000))
+    is_render = os.environ.get("RENDER", "").lower() == "true"
+    host = "0.0.0.0" if is_render else "localhost"
+
+    uvicorn.run("main:app", host=host, port=port, reload=True)
