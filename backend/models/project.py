@@ -25,6 +25,7 @@ class ProjectBase(BaseModel):
     description: str
     deadline: datetime
     status: ProjectStatus = ProjectStatus.PENDING
+    assigned_by: Optional[str] = None
 
 class ProjectCreate(ProjectBase):
     pass
@@ -53,3 +54,4 @@ class ProjectUpdate(BaseModel):
     description: Optional[str] = None
     deadline: Optional[datetime] = None
     status: Optional[ProjectStatus] = None
+    assigned_by: Optional[str] = None

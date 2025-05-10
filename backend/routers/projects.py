@@ -37,6 +37,7 @@ async def create_project(project: ProjectCreate, payload=Depends(JWTBearer())):
         "description": created_project["description"],
         "status": created_project.get("status", ProjectStatus.PENDING),
         "author_id": created_project["author_id"],
+        "assigned_by": created_project.get("assigned_by", None),
         "created_at": created_project["created_at"],
         "updated_at": created_project["updated_at"],
         "deadline": created_project.get("deadline", datetime.utcnow()) 
@@ -68,7 +69,8 @@ async def get_projects(payload=Depends(JWTBearer())):
             "created_at": project["created_at"],
             "updated_at": project["updated_at"],
             "deadline": project.get("deadline", datetime.utcnow()), 
-            "author_id": project.get("author_id", project.get("user_id"))  
+            "author_id": project.get("author_id", project.get("user_id")),
+            "assigned_by": project.get("assigned_by", None)
         }
         
         if "name" in project:
@@ -110,7 +112,8 @@ async def get_project(project_id: str, payload=Depends(JWTBearer())):
         "created_at": project["created_at"],
         "updated_at": project["updated_at"],
         "deadline": project.get("deadline", datetime.utcnow()), 
-        "author_id": project.get("author_id", project.get("user_id")) 
+        "author_id": project.get("author_id", project.get("user_id")) ,
+        "assigned_by": project.get("assigned_by", None)
     }
     
     if "name" in project:
@@ -163,7 +166,8 @@ async def update_project(project_id: str, project: ProjectUpdate, payload=Depend
         "created_at": updated_project["created_at"],
         "updated_at": updated_project["updated_at"],
         "deadline": updated_project.get("deadline", datetime.utcnow()),  # Default if missing
-        "author_id": updated_project.get("author_id", updated_project.get("user_id"))  
+        "author_id": updated_project.get("author_id", updated_project.get("user_id")),
+        "assigned_by": updated_project.get("assigned_by", None)
     }
     
     if "name" in updated_project:
