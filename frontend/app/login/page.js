@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -22,11 +23,13 @@ export default function Login() {
         body: new URLSearchParams({
           username: email,
           password: password,
+          remember_me: rememberMe,
         }),
       });
 
       if (response.ok) {
         const data = await response.json();
+        const tokenDuration = rememberMe ? 30 * 24 * 60 * 60 * 1000 : 15 * 60 * 1000;
         localStorage.setItem("access_token", data.access_token);
 
         localStorage.setItem(
@@ -38,6 +41,12 @@ export default function Login() {
             role: data.role,
           })
         );
+
+        setTimeout(() => {
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("user");
+          router.push("/login");
+        }, tokenDuration);
 
         router.push("/");
       } else {
@@ -83,7 +92,8 @@ export default function Login() {
             <input
               className="form-check-input text-white"
               type="checkbox"
-              value="remember-me"
+              checked={rememberMe} 
+              onChange={(e) => setRememberMe(e.target.checked)}
               id="checkDefault"
             />
             <label className="form-check-label" htmlFor="checkDefault">
