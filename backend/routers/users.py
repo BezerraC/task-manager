@@ -52,6 +52,31 @@ async def get_user(user_id: str, payload=Depends(JWTBearer())):
         "updated_at": user["updated_at"]
     }
 
+
+@router.get("/users", response_model=list[UserResponse])
+async def get_all_users(payload=Depends(JWTBearer())):
+    if payload["role"] != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access forbidden"
+        )
+        
+    users_collection = await get_users_collection()
+    users_cursor = users_collection.find()
+    users = await users_cursor.to_list(length=None)
+        
+    return [
+        {
+            "id": str(user["_id"]),
+            "name": user["name"],
+            "email": user["email"],
+            "role": user["role"],
+            "created_at": user["created_at"],
+            "updated_at": user["updated_at"]
+        }
+        for user in users
+    ]
+
 @router.put("/users/{user_id}", response_model=UserResponse)
 async def update_user(user_id: str, user: UserUpdate, payload=Depends(JWTBearer())):
     if payload["role"] != "admin" and payload["user_id"] != user_id:
