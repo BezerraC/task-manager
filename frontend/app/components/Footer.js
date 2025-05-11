@@ -11,10 +11,7 @@ export default function Footer() {
   
           <ul className="nav col-md-4 justify-content-end">
             <li className="nav-item">
-              <Link href="#" className="nav-link px-2 text-light">Repository</Link>
-            </li>
-            <li className="nav-item">
-              <Link href="#" className="nav-link px-2 text-light">Find a bug?</Link>
+              <Link href="#" className="nav-link px-2 text-light">Buy template</Link>
             </li>
           </ul>
         </footer>
