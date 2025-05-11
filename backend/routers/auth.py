@@ -1,6 +1,6 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Form
 from fastapi.security import OAuth2PasswordRequestForm
-from datetime import timedelta
+from datetime import datetime, timedelta
 from models.user import UserCreate, UserResponse, UserInDB
 from auth.auth_handler import verify_password, get_password_hash, create_access_token
 from database import get_users_collection
@@ -51,10 +51,14 @@ async def register(user: UserCreate):
         }
 
 @router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login(
+    username: str = Form(...),
+    password: str = Form(...),
+    remember_me: bool = Form(False) 
+):
     users_collection = await get_users_collection()
     
-    user = await users_collection.find_one({"email": form_data.username})
+    user = await users_collection.find_one({"email": username})
     
     if not user:
         raise HTTPException(
@@ -63,7 +67,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    if not verify_password(form_data.password, user["hashed_password"]):
+    if not verify_password(password, user["hashed_password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect password",
@@ -71,11 +75,17 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         )
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    if remember_me:  
+        access_token_expires = timedelta(days=30)
+    
     access_token = create_access_token(
         data={"user_id": str(user["_id"]), "role": user["role"]},
         expires_delta=access_token_expires
     )
-    
+
+    expiration_time = datetime.utcnow() + access_token_expires
+    print(f"The access token to user {username} expire in: {expiration_time}")
+
     return {
         "access_token": access_token,
         "token_type": "bearer",
