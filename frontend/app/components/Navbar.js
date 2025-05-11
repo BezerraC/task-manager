@@ -9,6 +9,7 @@ import Image from "next/image";
 export default function Navbar() {
   const [userName, setUserName] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -20,6 +21,11 @@ export default function Navbar() {
       setUserName(user.name);
       setIsLoggedIn(true);
     }
+
+    if (user && user.role === "admin") {
+      console.log(user)
+      setIsAdmin(true);
+    };
   }, []);
 
   const handleLogout = () => {
@@ -57,7 +63,7 @@ export default function Navbar() {
               <li className="nav-item">
                 <Link
                   className={`nav-link text-white ${
-                    pathname === "/" ? "active" : "" 
+                    pathname === "/" ? "active" : ""
                   }`}
                   href="/"
                 >
@@ -74,6 +80,22 @@ export default function Navbar() {
                   Tasks
                 </Link>
               </li>
+              {isAdmin ? (
+                <>
+                  <li className="nav-item">
+                    <Link
+                      className={`nav-link text-white ${
+                        pathname === "/users" ? "active" : ""
+                      }`}
+                      href="/users"
+                    >
+                      Users
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <></>
+              )}
               <li className="nav-item">
                 <Link
                   className={`nav-link text-white ${
@@ -97,7 +119,9 @@ export default function Navbar() {
                     </button>
                   </li>
                   <li className="nav-item">
-                    <Link href="/user/me" className="btn btn-light">{userName}</Link>
+                    <Link href="/user/me" className="btn btn-light">
+                      {userName}
+                    </Link>
                   </li>
                 </>
               ) : (
