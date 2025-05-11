@@ -1,16 +1,25 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import "boxicons";
 
 export default function UserPage() {
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   useEffect(() => {
-    async function fetchUser() {
+    import("boxicons");
+    const fetchUser = async () => {
       try {
         const token = localStorage.getItem("access_token");
+        
+        if (!token) {
+          console.error("No token found");
+          setIsLoading(false);
+          return;
+        }
+
         const response = await fetch(`${API_URL}/api/users/me`, {
           method: "GET",
           headers: {
@@ -26,14 +35,20 @@ export default function UserPage() {
         }
       } catch (error) {
         console.error("Error fetching user:", error);
+      } finally {
+        setIsLoading(false);
       }
-    }
+    };
 
     fetchUser();
-  }, []);
+  }, [API_URL]); 
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (!user) {
-    return <div>Loading...</div>;
+    return <div>User not found or not authenticated</div>;
   }
 
   return (
