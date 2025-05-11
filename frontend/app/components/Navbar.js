@@ -97,7 +97,7 @@ export default function Navbar() {
                     </button>
                   </li>
                   <li className="nav-item">
-                    <span className="btn btn-light">{userName}</span>
+                    <Link href="/user/me" className="btn btn-light">{userName}</Link>
                   </li>
                 </>
               ) : (
