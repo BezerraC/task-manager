@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from typing import List
 from models.project import ProjectCreate, ProjectResponse, ProjectUpdate, ProjectStatus
 from auth.auth_bearer import JWTBearer
-from database import get_projects_collection
+from database import get_projects_collection, get_tasks_collection 
 from bson import ObjectId
 from datetime import datetime
 
@@ -175,24 +175,24 @@ async def update_project(project_id: str, project: ProjectUpdate, payload=Depend
     
     return response
 
-@router.delete("/projects/{project_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/projects/{project_id}", status_code=204)
 async def delete_project(project_id: str, payload=Depends(JWTBearer())):
     projects_collection = await get_projects_collection()
+    tasks_collection = await get_tasks_collection()
     
-    existing_project = await projects_collection.find_one({"_id": ObjectId(project_id)})
+    project = await projects_collection.find_one({"_id": ObjectId(project_id)})
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
     
-    if not existing_project:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Project not found"
-        )
-    
-    # Check if user has permission - handle both author_id and user_id
-    user_field = "author_id" if "author_id" in existing_project else "user_id"
-    if payload["role"] != "admin" and payload["user_id"] != existing_project.get(user_field):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access forbidden"
-        )
-    
+    # Check if the user is the owner of the project
+    if project["author_id"] != payload["user_id"]:
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    # Delete the project
     await projects_collection.delete_one({"_id": ObjectId(project_id)})
+
+    # Delete tasks associated with the project
+    await tasks_collection.delete_many({"project_id": project_id})
+
+    return {"detail": "Project and related tasks deleted"}
