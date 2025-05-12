@@ -1,17 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import "boxicons";
 
-export default function ProjectPage() {
+export default function EditProjectPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params?.id;
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [deadline, setDeadline] = useState("");
+
   const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,7 +28,8 @@ export default function ProjectPage() {
   const totalPages = Math.ceil(tasks.length / itemsPerPage);
 
   useEffect(() => {
-    const fetchProjectAndTasks = async () => {
+    const fetchProject = async () => {
+      import("boxicons");
       const token = localStorage.getItem("access_token");
 
       const projectRes = await fetch(`${API_URL}/api/projects/${id}`, {
@@ -37,10 +42,13 @@ export default function ProjectPage() {
       if (projectRes.ok) {
         const projectData = await projectRes.json();
         setProject(projectData);
-        console.log(projectData);
+        setName(projectData.name);
+        setDescription(projectData.description);
+        setDeadline(
+          new Date(projectData.deadline).toISOString().substring(0, 10)
+        );
       } else {
         setProject(null);
-        return;
       }
 
       const tasksRes = await fetch(`${API_URL}/api/tasks?project_id=${id}`, {
@@ -56,12 +64,34 @@ export default function ProjectPage() {
       }
     };
 
-    fetchProjectAndTasks();
+    fetchProject();
   }, [API_URL, id]);
 
-  if (project === null) {
-    return <div>Loading...</div>;
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem("access_token");
+
+    const updatedProject = {
+      name,
+      description,
+      deadline,
+    };
+
+    const response = await fetch(`${API_URL}/api/projects/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(updatedProject),
+    });
+
+    if (response.ok) {
+      router.push(`/projects/${id}`);
+    } else {
+      console.error("Failed to update project");
+    }
+  };
 
   const sortTasks = (key) => {
     let direction = "asc";
@@ -90,50 +120,64 @@ export default function ProjectPage() {
     setSortConfig({ key, direction });
   };
 
+  if (project === null) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <main>
       <div className="mt-5">
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <div className="d-flex flex-column">
-            <h1 className="fw-bold text-white m-0">
-              {project.name || "Unnamed project"}
-            </h1>
-            <p className="text-secondary fs-6 m-0">{project.id}</p>
+        <form onSubmit={handleSubmit}>
+          <div className="d-flex align-items-start flex-wrap justify-content-between mb-3">
+            <div className="d-flex flex-column ">
+              <input
+                type="text"
+                className="form-control text-truncate mb-0 p-3 bg-itens border-0 text-white fw-bold m-0"
+                style={{ fontSize: "2rem" }}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+              <p className="text-secondary fs-6 m-0">{project.id}</p>
+            </div>
+            
           </div>
-          <div className="dropdown">
-            <button
-              className="btn pb-0 pt-2 px-1"
-              type="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-            >
-              <box-icon color="white" name="dots-vertical-rounded"></box-icon>
-            </button>
-            <ul className="dropdown-menu">
-              <Link href={`/projects/${project.id}/edit`} className="dropdown-item">
-                Edit
-              </Link>
-              <Link href={`/projects/${project.id}`} className="dropdown-item">
-                Delete
-              </Link>
-            </ul>
+          <div className="d-flex flex-column gap-2">
+            <textarea
+              rows={3}
+              className="form-control p-3 bg-itens border-0 text-white m-0"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+            />
+            <p className="text-secondary m-0 fs-6 ms-auto">
+              Author: {project.assigned_by}
+            </p>
           </div>
-        </div>
-        <div className="d-flex flex-column gap-2">
-          <p className="text-white m-0">{project.description}</p>
-          <p className="text-secondary m-0 fs-6 ms-auto">Author: {project.assigned_by}</p>
-        </div>
+          <div className="d-flex gap-2 mt-3 align-items-center justify-content-end"> 
+              <button
+                type="submit"
+                href={`/projects/${project.id}/edit`}
+                className="btn btn-light"
+              >
+                Update
+              </button>
+              <Link href={`/projects/${id}`} className="btn btn-outline-light">
+                Cancel
+              </Link>
+            </div>
+        </form>
       </div>
 
       <div className="mt-4 mb-4">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div className="d-flex align-items-end gap-1">
-            <h1 className="fw-bold text-white">Tasks</h1>
-            <p>({tasks.length})</p>
+            <h1 className="fw-bold text-muted">Tasks</h1>
+            <p className="text-muted">({tasks.length})</p>
           </div>
           <Link
             href={`/projects/${id}/tasks/new`}
-            className="btn btn-outline-light"
+            className="btn btn-outline-light disabled"
           >
             New Task
           </Link>
@@ -142,52 +186,57 @@ export default function ProjectPage() {
           <>
             <div className="row px-4 mb-3 text-white">
               <div className="col d-flex align-items-center">
-                <p className="m-0 text-white">Name</p>
-                <box-icon
-                  color="white"
-                  name="filter"
-                  onClick={() => sortTasks("name")}
-                  style={{ cursor: "pointer" }}
-                ></box-icon>
+                <p className="m-0 text-muted">Name</p>
+                <div className="disabled">
+                  <box-icon
+                    color="grey"
+                    name="filter"
+                    onClick={() => sortTasks("name")}
+                  ></box-icon>
+                </div>
               </div>
               <div className="col d-none d-sm-flex align-items-center">
-                <p className="m-0 text-white">Description</p>
-                <box-icon
-                  color="white"
-                  name="filter"
-                  onClick={() => sortTasks("description")}
-                  style={{ cursor: "pointer" }}
-                ></box-icon>
+                <p className="m-0 text-muted">Description</p>
+                <div className="disabled">
+                  <box-icon
+                    color="grey"
+                    name="filter"
+                    onClick={() => sortTasks("description")}
+                  ></box-icon>
+                </div>
               </div>
               <div className="col d-flex justify-content-center">
-                <p className="m-0 text-white">Status</p>
-                <box-icon
-                  color="white"
-                  name="filter"
-                  onClick={() => sortTasks("status")}
-                  style={{ cursor: "pointer" }}
-                ></box-icon>
+                <p className="m-0 text-muted">Status</p>
+                <div className="disabled">
+                  <box-icon
+                    color="grey"
+                    name="filter"
+                    onClick={() => sortTasks("status")}
+                  ></box-icon>
+                </div>
               </div>
               <div className="col d-flex justify-content-center">
-                <p className="m-0 text-white">Priority</p>
-                <box-icon
-                  color="white"
-                  name="filter"
-                  onClick={() => sortTasks("priority")}
-                  style={{ cursor: "pointer" }}
-                ></box-icon>
+                <p className="m-0 text-muted">Priority</p>
+                <div className="disabled">
+                  <box-icon
+                    color="grey"
+                    name="filter"
+                    onClick={() => sortTasks("priority")}
+                  ></box-icon>
+                </div>
               </div>
               <div className="col d-none d-sm-flex justify-content-center">
-                <p className="m-0 text-white">Deadline</p>
-                <box-icon
-                  color="white"
-                  name="filter"
-                  onClick={() => sortTasks("deadline")}
-                  style={{ cursor: "pointer" }}
-                ></box-icon>
+                <p className="m-0 text-muted">Deadline</p>
+                <div className="disabled">
+                  <box-icon
+                    color="grey"
+                    name="filter"
+                    onClick={() => sortTasks("deadline")}
+                  ></box-icon>
+                </div>
               </div>
               <div className="col d-flex justify-content-center">
-                <p className="m-0 text-white">Actions</p>
+                <p className="m-0 text-muted">Actions</p>
               </div>
             </div>
 
@@ -195,7 +244,7 @@ export default function ProjectPage() {
               {currentTasks.map((task) => (
                 <Link
                   href={`/tasks/${task.id}`}
-                  className="text-decoration-none"
+                  className="text-decoration-none c-disable disabled"
                   key={task.id}
                 >
                   <div className="px-4 py-4 d-flex flex-row align-items-center rounded-4 bg-itens text-white">
@@ -279,7 +328,7 @@ export default function ProjectPage() {
             </div>
 
             <nav
-              className="my-3 d-flex flex-column flex-sm-row justify-content-center"
+              className="my-3 d-flex flex-column flex-sm-row justify-content-center c-disable disabled"
               aria-label="Table navigation"
             >
               <div className="col d-none d-sm-block"></div>

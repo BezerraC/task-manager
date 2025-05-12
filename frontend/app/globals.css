@@ -123,6 +123,13 @@ a {
   background-color: #FFFFFF !important;
 }
 
+.c-disable.disabled, .c-disable:disabled, fieldset:disabled .c-disable {
+    color: #f8f9fa !important ;
+    pointer-events: none !important ;
+    background-color: transparent !important ;
+    border-color: #f8f9fa !important ;
+    opacity: .65 !important ;
+}
 
 
 @media (prefers-color-scheme: dark) {
