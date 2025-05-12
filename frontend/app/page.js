@@ -12,6 +12,7 @@ export default function Home() {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentProjects = projects.slice(indexOfFirstItem, indexOfLastItem);
+  const [projectToDelete, setProjectToDelete] = useState(null);
 
   const totalPages = Math.ceil(projects.length / itemsPerPage);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -68,6 +69,31 @@ export default function Home() {
 
     setProjects(sorted);
     setSortConfig({ key, direction });
+  };
+
+  const handleDelete = async (projectId) => {
+    try {
+      const token = localStorage.getItem("access_token");
+
+      const res = await fetch(`${API_URL}/api/projects/${projectId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        setProjects((prev) =>
+          prev.filter((project) => project.id !== projectId)
+        );
+      } else {
+        const errorData = await res.json();
+        alert("Failed to delete: " + (errorData.detail || res.status));
+      }
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert("Error deleting project");
+    }
   };
 
   return (
@@ -127,17 +153,28 @@ export default function Home() {
 
         <div className="d-flex flex-column gap-3">
           {currentProjects.map((project) => (
-            <Link href={`/projects/${project.id}`} className="text-decoration-none" key={project.id}>
-              <div
-                className="px-4 py-4 d-flex flex-row align-items-center rounded-4 bg-itens text-white"
-              >
-                <div className="col" scope="row">
+            <div className="px-4 py-4 d-flex flex-row align-items-center rounded-4 gap-3 bg-itens text-white" key={project.id}>
+              <div className="col text-truncate" scope="row">
+                <Link
+                  href={`/projects/${project.id}`}
+                  className="text-decoration-none" 
+                >
                   {project.name}
-                </div>
-                <div className="col d-none d-sm-block text-truncate">
+                </Link>
+              </div>
+              <div className="col d-none d-sm-block text-truncate">
+                <Link
+                  href={`/projects/${project.id}`}
+                  className="text-decoration-none"
+                >
                   {project.description}
-                </div>
-                <div className="col d-flex justify-content-center">
+                </Link>
+              </div>
+              <div className="col d-flex justify-content-center">
+                <Link
+                  href={`/projects/${project.id}`}
+                  className="text-decoration-none"
+                >
                   <span
                     className={`badge fw-normal fs-6 ${
                       project.status === "Pending"
@@ -151,47 +188,61 @@ export default function Home() {
                   >
                     {project.status}
                   </span>
-                </div>
-                <div className="col d-none d-sm-flex justify-content-center">
+                </Link>
+              </div>
+              <div className="col d-none d-sm-flex justify-content-center">
+                <Link
+                  href={`/projects/${project.id}`}
+                  className="text-decoration-none"
+                >
                   {new Date(project.deadline).toLocaleDateString()}
-                </div>
-                <div className="col d-flex justify-content-center">
-                  <div className="dropdown ms-4">
-                    <button
-                      className="btn btn-outline-light pb-0 pt-2 px-1"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
+                </Link>
+              </div>
+
+              <div className="col d-flex justify-content-center">
+                <div className="dropdown ms-4">
+                  <button
+                    className="btn pb-0 pt-2 px-1"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    <box-icon
+                      color="white"
+                      name="dots-vertical-rounded"
+                    ></box-icon>
+                  </button>
+                  <ul className="dropdown-menu z-3">
+                    <Link
+                      href={`/projects/${project.id}`}
+                      className="dropdown-item"
                     >
-                      <box-icon
-                        color="white"
-                        name="dots-vertical-rounded"
-                      ></box-icon>
+                      View
+                    </Link>
+                    <Link
+                      href={`/projects/${project.id}/edit`}
+                      className="dropdown-item"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      type="button"
+                      className="dropdown-item"
+                      data-bs-toggle="modal"
+                      data-bs-target="#deleteModal"
+                      onClick={() =>
+                        setProjectToDelete({
+                          id: project.id,
+                          name: project.name,
+                        })
+                      }
+                    >
+                      Delete
                     </button>
-                    <ul className="dropdown-menu">
-                      <Link
-                        href={`/projects/${project.id}`}
-                        className="dropdown-item"
-                      >
-                        View
-                      </Link>
-                      <Link
-                        href={`/projects/${project.id}/edit`}
-                        className="dropdown-item"
-                      >
-                        Edit
-                      </Link>
-                      <Link
-                        href={`/projects/${project.id}`}
-                        className="dropdown-item"
-                      >
-                        Delete
-                      </Link>
-                    </ul>
-                  </div>
+                  </ul>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
 
@@ -253,6 +304,54 @@ export default function Home() {
             </select>
           </div>
         </nav>
+      </div>
+
+      <div
+        className="modal fade"
+        id="deleteModal"
+        tabIndex="-1"
+        aria-labelledby="deleteModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-dialog-centered ">
+          <div className="modal-content bg-itens text-white">
+            <div className="modal-header border-0">
+              <h1 className="modal-title fs-5" id="deleteModalLabel">
+                Confirm Delete
+              </h1>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              This action will <b>permanently delete</b> the project{" "}
+              <div class="alert alert-danger my-2 p-2" role="alert">
+                {projectToDelete?.name}
+              </div>{" "}
+              and all related tasks. Are you sure?
+            </div>
+            <div className="modal-footer border-0 d-flex flex-column align-items-stretch">
+              <button
+                type="button"
+                className="btn btn-danger"
+                data-bs-dismiss="modal"
+                onClick={() => handleDelete(projectToDelete?.id)}
+              >
+                Delete
+              </button>
+              <button
+                type="button"
+                className="btn btn-outline-light"
+                data-bs-dismiss="modal"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );

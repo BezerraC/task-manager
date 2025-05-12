@@ -131,6 +131,13 @@ a {
     opacity: .65 !important ;
 }
 
+.alert-danger {
+    color: #ff939f;
+    background-color: #3d2426;
+    border-color: #5b262c;
+    --bs-alert-link-color: var(--bs-danger-text-emphasis);
+}
+
 
 @media (prefers-color-scheme: dark) {
   html {
