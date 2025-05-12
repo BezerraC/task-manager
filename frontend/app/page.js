@@ -176,7 +176,7 @@ export default function Home() {
                         View
                       </Link>
                       <Link
-                        href={`/projects/${project.id}`}
+                        href={`/projects/${project.id}/edit`}
                         className="dropdown-item"
                       >
                         Edit

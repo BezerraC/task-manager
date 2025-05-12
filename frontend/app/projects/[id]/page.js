@@ -146,7 +146,7 @@ export default function ProjectPage() {
                 <box-icon
                   color="white"
                   name="filter"
-                  onClick={() => sortTasks("name")}
+                  onClick={() => sortTasks("title")}
                   style={{ cursor: "pointer" }}
                 ></box-icon>
               </div>
