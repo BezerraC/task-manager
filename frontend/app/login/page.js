@@ -23,7 +23,7 @@ export default function Login() {
         body: new URLSearchParams({
           username: email,
           password: password,
-          remember_me: rememberMe,
+          remember_me: rememberMe ? "True" : "False",
         }),
       });
 
@@ -40,13 +40,7 @@ export default function Login() {
             email: data.email,
             role: data.role,
           })
-        );
-
-        setTimeout(() => {
-          localStorage.removeItem("access_token");
-          localStorage.removeItem("user");
-          router.push("/login");
-        }, tokenDuration);
+        );  
 
         router.push("/");
       } else {
